@@ -8,6 +8,14 @@ import { type SupportedFrameworkName } from "./types";
 
 export const name: SupportedFrameworkName = "fastify";
 
+type QueryString = {
+  [key in queryKeys]: string;
+};
+
+type Headers = {
+  [key in headerKeys]: string;
+};
+
 /**
  * Serve and register any declared functions with Inngest, making them available
  * to be triggered by events.
@@ -20,7 +28,10 @@ export const serve: ServeHandler = (nameOrInngest, fns, opts) => {
     nameOrInngest,
     fns,
     opts,
-    (req: FastifyRequest, _reply: FastifyReply) => {
+    (
+      req: FastifyRequest<{ Querystring: QueryString; Headers: Headers }>,
+      _reply: FastifyReply
+    ) => {
       const hostname = req.headers["host"];
       const protocol = hostname?.includes("://") ? "" : `${req.protocol}://`;
       const url = new URL(req.url, `${protocol}${hostname || ""}`);
