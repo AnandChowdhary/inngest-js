@@ -910,6 +910,7 @@ export type SupportedFrameworkName =
   | "digitalocean"
   | "edge"
   | "express"
+  | "fastify"
   | "aws-lambda"
   | "nextjs"
   | "nuxt"
