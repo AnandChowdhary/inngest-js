@@ -1,6 +1,6 @@
 import canonicalize from "canonicalize";
 import { hmac, sha256 } from "hash.js";
-import { z } from "zod";
+import { object, z } from "zod";
 import { ServerTiming } from "../helpers/ServerTiming";
 import { envKeys, headerKeys, queryKeys } from "../helpers/consts";
 import { devServerAvailable, devServerUrl } from "../helpers/devserver";
@@ -784,9 +784,11 @@ export class InngestCommHandler<
       }
 
       // TODO PrettyError on parse failure; serve handler may be set up badly
-      const { event, steps, ctx } = z
+      const { event, events, steps, ctx } = z
         .object({
           event: z.object({}).passthrough(),
+          events: z.array(z.object({}).passthrough()),
+          // events: z.array(z.object({}).passthrough()),
           /**
            * When handling per-step errors, steps will need to be an object with
            * either a `data` or an `error` key.
@@ -846,7 +848,7 @@ export class InngestCommHandler<
           }) ?? [];
 
       const ret = await fn.fn["runFn"](
-        { event, runId: ctx?.run_id },
+        { event: events[0], events, runId: ctx?.run_id },
         opStack,
         /**
          * TODO The executor is sending `"step"` as the step ID when it is not
