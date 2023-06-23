@@ -637,6 +637,7 @@ export class InngestCommHandler<
       if (runRes) {
         this.upsertSigningKeyFromEnv(env);
         this.validateSignature(runRes.signature, runRes.data);
+        this.client["inngestApi"].setSigningKey(this.signingKey);
 
         const stepRes = await this.runStep(
           runRes.fnId,
@@ -775,7 +776,7 @@ export class InngestCommHandler<
         throw new Error(`Could not find function with ID "${functionId}"`);
       }
 
-      const fndata = await parseFnData(data, this.client.inngestAPI);
+      const fndata = await parseFnData(data, this.client["inngestApi"]);
       if (!fndata.ok) {
         throw new Error(fndata.error);
       }
